@@ -1,0 +1,18 @@
+<article class="post">
+	<header class="post-header">
+		<div class="post-title"> 
+			{{ page.title | escape }}
+		</div>
+		<time class="post-date dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+			{%- assign date_format = site.date_forma | default: "%Y/%m/%d" -%}
+			{{ page.date | date: date_format }}
+		</time>		
+	</header>
+
+	<div class="post-content">
+
+		프로젝트를 진행하면서 발생한 다양한 문제와 문제가 발생했을때 개인적인 의견 및 해결방법을 기술한 카테고리
+
+		{{ content }}
+	</div>
+</article>
