@@ -14,12 +14,3 @@ category: problems
 # 2. 해결방법을 위한 과정
 
 # 3. 해결방법
-
-
-[comment]: <> (This is code)
-
-[comment]: <> (```ruby)
-
-[comment]: <> (print 'golnag start!')
-
-[comment]: <> (```)

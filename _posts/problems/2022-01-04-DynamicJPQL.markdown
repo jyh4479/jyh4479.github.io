@@ -11,15 +11,10 @@ category: problems
 
 + JPA 기반 옵션을 통한 검색 기능을 구현하고자 할 때 동적으로 검색하기 위한 기술이 무엇이 있을까?
 
+#
+
 # 2. 해결방법을 위한 과정
 
+#
+
 # 3. 해결방법
-
-
-[comment]: <> (This is code)
-
-[comment]: <> (```ruby)
-
-[comment]: <> (print 'golnag start!')
-
-[comment]: <> (```)
