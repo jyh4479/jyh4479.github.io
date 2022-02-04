@@ -71,7 +71,8 @@ category: problems
 
   > JPAQueryFactory를 Bean에 등록하기 위한 설정이다.  
   > EntityManager를 아래와 같이 인자로 전달하여 Bean에 등록하면 된다.
-  + QueryDslConfig.java
+  
++ QueryDslConfig.java
     
     ```java
       @Configuration
