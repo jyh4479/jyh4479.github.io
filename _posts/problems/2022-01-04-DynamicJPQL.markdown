@@ -72,6 +72,7 @@ category: problems
   > JPAQueryFactory를 Bean에 등록하기 위한 설정이다.  
   > EntityManager를 아래와 같이 인자로 전달하여 Bean에 등록하면 된다.
   + QueryDslConfig.java
+    
     ```java
       @Configuration
       public class QueryDslConfig {
@@ -85,14 +86,12 @@ category: problems
     }
     ```
   
-
-  + Entity
-    > QueryDSL 환경을 갖추고 빌드를 하면 build > generated > querydsl 경로로 @Entity를 타겟하여 Q Entity를 생성한다.  
-    > Q Entiy는 Bean에 등록한 JPAQueryFactory에 사용된다. 아래는 타겟이되는 Entity다.
-
-    + Content.java (Entity)
-
-      ```java
++ Entity
+  > QueryDSL 환경을 갖추고 빌드를 하면 build > generated > querydsl 경로로 @Entity를 타겟하여 Q Entity를 생성한다.  
+  > Q Entiy는 Bean에 등록한 JPAQueryFactory에 사용된다. 아래는 타겟이되는 Entity다.
+  
+  + Content.java (Entity)
+    ```java
       @Data
       @Table(name = "content")
       @Entity
@@ -135,76 +134,75 @@ category: problems
           }
       }
       ```
-  + Repository
-    > QueryDSL을 사용하는데 있어 가장 중요한 부분이라고 생각된다.  
-    > 소스코드를 통해 기존 JPA의 Repository와 QueryDSL을 사용하기 위해 생성한 RepositoryCustom이 어떻게 연관이 있는지,
-    > 실제 구현이 어떻게 이루어지는지 유심히 보면 좋을것같다.
-    + ContentRepository.java (interface)
-      ```java
-      @Repository
-      public interface ContentRepository extends JpaRepository<Content, Long>, ContentRepositoryCustom {
-      }
-      ```
++ Repository
+  > QueryDSL을 사용하는데 있어 가장 중요한 부분이라고 생각된다.  
+  > 소스코드를 통해 기존 JPA의 Repository와 QueryDSL을 사용하기 위해 생성한 RepositoryCustom이 어떻게 연관이 있는지,
+  > 실제 구현이 어떻게 이루어지는지 유심히 보면 좋을것같다.
+  + ContentRepository.java (interface)
+    ```java
+    @Repository
+    public interface ContentRepository extends JpaRepository<Content, Long>, ContentRepositoryCustom {
+    }
+    ```
+  + ContentRepositoryCustom.java (interface)
+    ```java
+    public interface ContentRepositoryCustom {
+    List<Content> findByOption(Pageable paging, SearchOption searchOption);
       
-    + ContentRepositoryCustom.java (interface)
-      ```java
-      public interface ContentRepositoryCustom {
-      List<Content> findByOption(Pageable paging, SearchOption searchOption);
-      
-          Integer findByOptionSize(SearchOption searchOption);
-      }
-      ```
-    + ContentRepositoryImpl.java
-      ```java
-      @Log
-      @AllArgsConstructor
-      public class ContentRepositoryImpl implements ContentRepositoryCustom {
-      private final JPAQueryFactory jpaQueryFactory;
-      
-          private BooleanExpression eqId(Long id) {
-              if (id == null) return null;
-              else return QContent.content.id.eq(id);
-          }
-      
-          private BooleanExpression containWriter(String writer) {
-              if (writer == null) return null;
-              else return QContent.content.writer.contains(writer);
-          }
-      
-          private BooleanExpression containTitle(String title) {
-              if (title == null) return null;
-              else return QContent.content.title.contains(title);
-          }
-      
-          private BooleanExpression eqDate(String date) {
-              if (date == null) return null;
-              else return QContent.content.date.eq(date);
-          }
-      
-          public List<Content> findByOption(Pageable paging, SearchOption searchOption) {
-              log.info("run ContentRepositoryImpl findByOption");
-              List<Content> result = jpaQueryFactory.selectFrom(QContent.content)
-                      .where(eqId(searchOption.getId()),
-                              containTitle(searchOption.getTitle()),
-                              eqDate(searchOption.getDate()),
-                              containWriter(searchOption.getWriter()))
-                      .offset(paging.getPageNumber() * paging.getPageSize())
-                      .limit(paging.getPageSize())
-                      .fetch();
-              return result;
-          }
-      
-          public Integer findByOptionSize(SearchOption searchOption) {
-              List<Content> result = jpaQueryFactory.selectFrom(QContent.content)
-                      .where(eqId(searchOption.getId()),
-                              containTitle(searchOption.getTitle()),
-                              eqDate(searchOption.getDate()),
-                              containWriter(searchOption.getWriter()))
-                      .fetch();
-              return result.size();
-          }
-      }
-      ```
+    Integer findByOptionSize(SearchOption searchOption);
+    }
+    ```
+  + ContentRepositoryImpl.java
+    ```java
+    @Log
+    @AllArgsConstructor
+    public class ContentRepositoryImpl implements ContentRepositoryCustom {
+    private final JPAQueryFactory jpaQueryFactory;
+    
+        private BooleanExpression eqId(Long id) {
+            if (id == null) return null;
+            else return QContent.content.id.eq(id);
+        }
+    
+        private BooleanExpression containWriter(String writer) {
+            if (writer == null) return null;
+            else return QContent.content.writer.contains(writer);
+        }
+    
+        private BooleanExpression containTitle(String title) {
+            if (title == null) return null;
+            else return QContent.content.title.contains(title);
+        }
+    
+        private BooleanExpression eqDate(String date) {
+            if (date == null) return null;
+            else return QContent.content.date.eq(date);
+        }
+    
+        public List<Content> findByOption(Pageable paging, SearchOption searchOption) {
+            log.info("run ContentRepositoryImpl findByOption");
+            List<Content> result = jpaQueryFactory.selectFrom(QContent.content)
+                    .where(eqId(searchOption.getId()),
+                            containTitle(searchOption.getTitle()),
+                            eqDate(searchOption.getDate()),
+                            containWriter(searchOption.getWriter()))
+                    .offset(paging.getPageNumber() * paging.getPageSize())
+                    .limit(paging.getPageSize())
+                    .fetch();
+            return result;
+        }
+    
+        public Integer findByOptionSize(SearchOption searchOption) {
+            List<Content> result = jpaQueryFactory.selectFrom(QContent.content)
+                    .where(eqId(searchOption.getId()),
+                            containTitle(searchOption.getTitle()),
+                            eqDate(searchOption.getDate()),
+                            containWriter(searchOption.getWriter()))
+                    .fetch();
+            return result.size();
+        }
+    }
+    ```
     > 기존에 옵션개수에 따라 모든 Query를 구현하는 것이 아닌 BooleanExpression을 사용함으로써
     > 옵션의 null 체크를 하고 null인 경우는 옵션의 모든 정보를 검색하도록한다.  
     > (추가적으로 BooleanExpression이 아닌 그냥 null을 where절에 입력하는경우 오류가 발생)
