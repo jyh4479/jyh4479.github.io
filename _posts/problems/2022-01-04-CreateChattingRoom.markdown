@@ -1,6 +1,6 @@
 ---
 layout: problems
-title: DB에 JSON 데이터 저장과 Entity 인스턴스 생성 원리에 대한 고찰
+title: 채팅방 생성 관리에 대한 고찰
 date: 2022-01-04 19:20:23 +0900
 category: problems
 ---
@@ -66,5 +66,92 @@ category: problems
       > 1. 생성되는 채팅방에 속하게될 멤버 id 정보를 받는다.
       > 2. 채팅방을 생성한다.
       > 3. 생성된 채팅방의 id를 해당하는 멤버에게 JSON 형태로 저장한다.
+    
+    <br><br>
+  
+    1. 멤버 id 정보 받기
+        + addChatRoom.java (Controller)
+        ```java
+        @PostMapping(value = "/chatroom")
+        public ResponseEntity<?> addChatRoom(@RequestBody List<Member> memberList) {
+        log.info("run addChatRoom in Controller");
+            try {
+                chattingRoomService.createChattingRoom(memberList);
+                return new ResponseEntity<>(null, null, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(null, null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        ```
+    
+    <br><br>
+  
+    2. 채팅방 생성
+        + createChattingRoom.java (Service)
+        ```java
+        @Transactional(rollbackOn = {Exception.class})
+        public void createChattingRoom(List<Member> memberList) {
 
-    1.  
+        ChattingRoom chattingRoom = new ChattingRoom();
+        chattingRoomRepository.save(chattingRoom);
+
+        NewChattingRoomInfo newChattingRoomInfo = new NewChattingRoomInfo();
+        newChattingRoomInfo.setId(chattingRoom.getId());
+        newChattingRoomInfo.setMemberList(memberList);
+        
+        webClient.post()
+                .uri("/chattingroom")
+                .bodyValue(newChattingRoomInfo)
+                .retrieve()
+                .onStatus(HttpStatus::isError, clientResponse -> Mono.error(Exception::new))
+                .bodyToMono(boolean.class)
+                .block();
+        }
+        ```
+    
+    <br><br>
+  
+    3. JSON 형태로 멤버에게 추가된 채팅방 정보 저장
+        + addChattingRoom.java (Service)
+        ```java
+        @Transactional(rollbackFor = Exception.class)
+        public void addChattingRoom(NewChattingRoomInfo newChattingRoomInfo) throws ParseException {
+            Long roomId = newChattingRoomInfo.getId();
+            List<MemberId> memberList = newChattingRoomInfo.getMemberList();
+
+            JSONParser jsonParser = new JSONParser();
+            ObjectMapper mapper = new ObjectMapper();
+
+            for (MemberId memberId : memberList) {
+                Member member = memberRepository.getById(memberId.getId());
+    
+                JSONArray jsonArray;
+                if (member.getChattingRoomList() == null) jsonArray = new JSONArray();
+                else {
+                    Object obj = jsonParser.parse(member.getChattingRoomList());
+                    JSONObject jsonObject = (JSONObject) obj;
+                    jsonArray = (JSONArray) jsonObject.get("dataList");
+                }
+    
+                JSONObject chattingList = new JSONObject();
+    
+                JSONObject newRoomInfo = new JSONObject();
+                newRoomInfo.put("id", roomId);
+    
+                jsonArray.add(newRoomInfo);
+                chattingList.put("dataList", jsonArray);
+    
+                member.setChattingRoomList(chattingList.toJSONString());
+                memberRepository.save(member);
+            }
+        }
+        ```
+    
+    > 프로젝트를 진행하면서 @Transactional에 대한 동작이 이해가지 않는 부분이 있었다.   
+    > 보통 마지막에 Commit 작업을 통해 쿼리를 날리는 방식으로 알고있었는데 채팅방을 생성하고나서 바로 채팅방 id에 접근할 수 있었다.  
+    > Auto increment 설정된 id를 가지고 있는 인스턴스를 생성할때 쿼리를 날리는 시점이 다르다고 예상하고있지만 @Transactional 어노테이션에 대한 공부가 부족하다고 판단된다.  
+    > 해당 어노테이션을 가지고 학습한 내용을 포스팅할 계획이다.
+
+<br><br><br>
+
++ JSON이 다른 좋은방법은 무엇이 있을까?
