@@ -12,12 +12,16 @@ category: problems
 + JPA 기반 옵션을 통한 검색 기능을 구현하고자 할 때 동적으로 검색하기 위한 기술이 무엇이 있을까?
 + QueryDSL을 사용하는 방법과 간단한 예시
 
+<br><br><br>
+
 # 2. 해결방법을 위한 과정
 
 > 사내에서 진행하는 Spring 스터디 시간에 위에서 언급했던 것 처럼 옵션 개수에 따라 JPQL 쿼리 개수가 2^n 만큼 생성되어야하는 문제에 대해 언급하고 다른 방법이 없는지 질문하게 되었다.  
 > 다른 개발자 분이 'QueryDSL'을 사용하면 해결할 수 있을 것이라고 알려주셨고,
 > '동적 JPA' 라는 키워드로 구글링을 해보니 QueryDSL에 대한 정보들이 많이 나와있었다.
 > 관련 정보들을 나름대로 정리해보고 적용해보았다.
+
+<br><br><br>
 
 # 3. 해결방법
 
@@ -69,6 +73,8 @@ category: problems
       </code>
     </pre>
 
+  <br><br>
+  
   > JPAQueryFactory를 Bean에 등록하기 위한 설정이다.  
   > EntityManager를 아래와 같이 인자로 전달하여 Bean에 등록하면 된다.
   
@@ -86,7 +92,9 @@ category: problems
       }
     }
     ```
-  
+
+<br><br><br>  
+
 + Entity
   > QueryDSL 환경을 갖추고 빌드를 하면 build > generated > querydsl 경로로 @Entity를 타겟하여 Q Entity를 생성한다.  
   > Q Entiy는 Bean에 등록한 JPAQueryFactory에 사용된다. 아래는 타겟이되는 Entity다.
@@ -135,6 +143,9 @@ category: problems
           }
       }
       ```
+
+<br><br><br>
+
 + Repository
   > QueryDSL을 사용하는데 있어 가장 중요한 부분이라고 생각된다.  
   > 소스코드를 통해 기존 JPA의 Repository와 QueryDSL을 사용하기 위해 생성한 RepositoryCustom이 어떻게 연관이 있는지,
