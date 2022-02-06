@@ -25,6 +25,7 @@ category: problems
 
 + JSON을 이용한 채팅방 정보 
     > JSON을 이용하는 경우 각각 Member는 채팅방에 대한 정보를 아래와 같이 String으로 저장한다.
+    
     + Member.java (Entity)
     ```java
     @Entity
@@ -46,7 +47,9 @@ category: problems
     ```
     
     <br><br>
+  
     > 다음으로 채팅방에 대한 정보를 담을 Entity이다. (실질적으로 별다른 기능이 없어서 id만 가지고있는 상태다.)
+    
     + Member.java (Entity)
     ```java
     @Entity
@@ -62,6 +65,7 @@ category: problems
     ```
   
     <br><br>
+  
     + logic
       > 1. 생성되는 채팅방에 속하게될 멤버 id 정보를 받는다.
       > 2. 채팅방을 생성한다.
@@ -71,7 +75,8 @@ category: problems
   
     1. 멤버 id 정보 받기
         + addChatRoom.java (Controller)
-        ```java
+        
+       ```java
         @PostMapping(value = "/chatroom")
         public ResponseEntity<?> addChatRoom(@RequestBody List<Member> memberList) {
         log.info("run addChatRoom in Controller");
@@ -88,6 +93,7 @@ category: problems
   
     2. 채팅방 생성
         + createChattingRoom.java (Service)
+        
         ```java
         @Transactional(rollbackOn = {Exception.class})
         public void createChattingRoom(List<Member> memberList) {
@@ -113,6 +119,7 @@ category: problems
   
     3. JSON 형태로 멤버에게 추가된 채팅방 정보 저장
         + addChattingRoom.java (Service)
+        
         ```java
         @Transactional(rollbackFor = Exception.class)
         public void addChattingRoom(NewChattingRoomInfo newChattingRoomInfo) throws ParseException {
