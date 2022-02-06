@@ -27,6 +27,7 @@ category: problems
     > JSON을 이용하는 경우 각각 Member는 채팅방에 대한 정보를 아래와 같이 String으로 저장한다.
     
     + Member.java (Entity)
+    
     ```java
     @Entity
     @Table(name = "member")
@@ -51,6 +52,7 @@ category: problems
     > 다음으로 채팅방에 대한 정보를 담을 Entity이다. (실질적으로 별다른 기능이 없어서 id만 가지고있는 상태다.)
     
     + Member.java (Entity)
+    
     ```java
     @Entity
     @Table(name = "chatting_room")
