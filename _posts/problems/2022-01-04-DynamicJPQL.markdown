@@ -1,7 +1,7 @@
 ---
 layout: problems 
 title: 동적으로 JPA 사용하기 
-date: 2022-01-04 19:20:23 +0900 
+date: 2022-01-04 00:00:00 +0900 
 category: problems
 ---
 
